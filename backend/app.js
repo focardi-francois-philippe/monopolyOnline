@@ -256,6 +256,9 @@ io.on('connection', (socket) => {
 
     });
     socket.on('addJoueur', async (nomJoueur,couleur) => {
+        try {
+            
+        
         const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
         const idClientRequest = socket.id
         const clients = io.sockets.adapter.rooms.get(idRoom);//all clients room
@@ -282,6 +285,9 @@ io.on('connection', (socket) => {
             console.table(io.sockets.adapter.rooms.get(idRoom))
             io.sockets.in(idRoom).emit("ready",JSON.stringify(joueur1),JSON.stringify(joueur))
             auTourDe(idRoom,joueur.nomJoueur)
+        }
+    }catch (error) {
+            
         }
     });
     socket.on("acheter",async ()=>{
