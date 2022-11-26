@@ -196,6 +196,7 @@ app.get('/casesJson', (req, res) => {
 })
 
 
+
 io.on('connection', (socket) => {
     
     const idSalon = socket.handshake.query.idSalon
@@ -239,13 +240,20 @@ io.on('connection', (socket) => {
 
 
     socket.on('disconnect', async () => {
-        const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
-        const idClientRequest = socket.id
-        const clients = io.sockets.adapter.rooms.get(idRoom);//all clients room
-        const client = [...clients][0]
-        const joueur = await joueurInRoom(rooms,idRoom,client)
-        io.sockets.in(idRoom).emit("fin",JSON.stringify(joueur))
-        io.in(idRoom).disconnectSockets()
+        try
+        {
+            const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
+            const idClientRequest = socket.id
+            const clients = io.sockets.adapter.rooms.get(idRoom);//all clients room
+            const client = [...clients][0]
+            const joueur = await joueurInRoom(rooms,idRoom,client)
+            io.sockets.in(idRoom).emit("fin",JSON.stringify(joueur))
+            io.in(idRoom).disconnectSockets()
+        }catch(err)
+        {   
+
+        }
+
     });
     socket.on('addJoueur', async (nomJoueur,couleur) => {
         const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
@@ -333,7 +341,7 @@ io.on('connection', (socket) => {
             room.idProchainJoueur = prochainJoueur.id
             room.nomProchainJoueur = prochainJoueur.nomJoueur
         }
-        auTourDe(idRoom,prochainJoueur.nomJoueur)
+        auTourDe(idRoom,room.nomProchainJoueur)
     })
     socket.on('lancerDes',async () => {
         const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
@@ -419,7 +427,6 @@ io.on('connection', (socket) => {
     });
     
   });
-
 
 server.listen(port,() => {
   
