@@ -278,11 +278,11 @@ io.on('connection', (socket) => {
             const joueur1 = await joueurInRoom(rooms,idRoom,client)
             joueur1.idJeu = 1
             joueur.idJeu = 2
-            console.table(room[0])
-            console.table(room[1])
+            
+            
             room.idProchainJoueur = joueur.id
             room.nomProchainJoueur = joueur.nomJoueur
-            console.table(io.sockets.adapter.rooms.get(idRoom))
+            
             io.sockets.in(idRoom).emit("ready",JSON.stringify(joueur1),JSON.stringify(joueur))
             auTourDe(idRoom,joueur.nomJoueur)
         }
@@ -312,12 +312,12 @@ io.on('connection', (socket) => {
         {
             nouveauJoueur = await joueurInRoom(rooms,idRoom,setToArray[0])
         }
-        console.log("-------------")
-        console.log(room)
-        console.log("-------------")
-        console.log("-------------ROOMS")
-        console.log(rooms)
-        console.log("-------------")
+        
+        
+        
+        
+        
+        
         joueur.solde -= room["cases"][joueur.idCase].prix
         room["cases"][joueur.idCase].proprietaire = joueur.id
 

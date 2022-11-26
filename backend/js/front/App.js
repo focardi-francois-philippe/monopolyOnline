@@ -9,7 +9,7 @@ class App
 
     async initJeu(joueur1,joueur2)
     {
-        console.log()
+        
         this.joueur.push(joueur1)
         this.joueur.push(joueur2)
         this.jeu = await Jeu.init()
@@ -18,12 +18,12 @@ class App
         this.jeu.plateau.dessinerJoueur(this.joueur[0])
         await this.jeu.plateau.dessinerJoueur(this.joueur[1])
         //let  i = 0
-        // console.log(document.getElementById("joueur1h3"))
+        // 
         // document.getElementById("joueur1h3").innerHTML += joueur1.nom
         // document.getElementById("joueur2h3").innerHTML += joueur2.nom
         // document.getElementById("soldej1").innerHTML =  "Solde : " +  app.joueur[0].solde
         // document.getElementById("soldej2").innerHTML =  "Solde : " +  app.joueur[1].solde
-        console.log(this.joueur[0])
+        
     }
     getJoueurByIdSocket(idSocket)
     {
@@ -67,7 +67,7 @@ const soldeJ2 = document.getElementById("soldej2")
 //     {
 //         //app.jeu.plateau.stopMusique(app.joueur[1])
 //         resultatLancer = Joueur.lancerDes()
-//         console.log(resultatLancer)
+//         
 //         app.jeu.plateau.enleverJoueur(app.joueur[0])
 //         app.joueur[0].deplacement(resultatLancer)
 //         app.jeu.plateau.dessinerJoueur(app.joueur[0])
@@ -87,7 +87,7 @@ const soldeJ2 = document.getElementById("soldej2")
 //     {
 //        // app.jeu.plateau.stopMusique(app.joueur[0])
 //         resultatLancer = Joueur.lancerDes()
-//         console.log(resultatLancer)
+//         
 //         app.jeu.plateau.enleverJoueur(app.joueur[1])
 //         app.joueur[1].deplacement(resultatLancer)
 //         app.jeu.plateau.dessinerJoueur(app.joueur[1])
@@ -97,4 +97,3 @@ const soldeJ2 = document.getElementById("soldej2")
 //     }
 
 // })
-console.log(valider)

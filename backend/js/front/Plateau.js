@@ -14,15 +14,15 @@ class Plateau
     {
         const canv =  document.getElementById("canvas").getContext("2d")
         const cases = await Plateau.getCasesFile()
-        console.log(new CaseDessin(canv,cases))
+        
         return new Plateau(canv,await Plateau.instantiateAllCase(cases),new CaseDessin(canv,cases))
     }
     dessinerJoueur(joueur)
     {
-        console.log(joueur.couleur)
+        
         this.canvas.beginPath()
         this.canvas.fillStyle = joueur.couleur
-        console.log(joueur)
+        
         this.canvas.arc(this.#_cases[joueur.idCases].positionXJoueur[joueur.id-1],this.#_cases[joueur.idCases].positionYJoueur[joueur.id-1], 5, 0, 2 * Math.PI)
         this.canvas.fill();
         this.canvas.closePath()

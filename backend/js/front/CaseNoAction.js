@@ -4,7 +4,7 @@ class CaseNoAction extends CaseJeu{
     }
     actionCase(joueur) {
         super.actionCase();
-        console.log("Case no action")
+        
 
     }
 }

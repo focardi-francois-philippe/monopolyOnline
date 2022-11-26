@@ -8,7 +8,7 @@ class CaseImpot extends CaseJeu{
         super.actionCase();
         // joueur.solde -= this.inpot
         // this.inpot += IMPOT
-        // console.log("CaseImpot")
+        // 
         
     }
 }

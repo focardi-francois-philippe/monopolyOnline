@@ -156,9 +156,9 @@
         const historique = document.getElementById("log")
         valider.addEventListener("click", () => {
 
-            console.log(joueur.value)
-            console.log(couleurJoueur.value)
-            console.log(joueur.value)
+            
+            
+            
             if (joueur.value != "") {
                 socket.emit('addJoueur', joueur.value, couleurJoueur.value);
                 postMessageChat.removeAttribute("disabled")
@@ -175,7 +175,7 @@
 
         socket.on("receiveChat",(emeteur,msg) => {
                const nomJoueur = emeteur
-               console.log(emeteur)
+               
                chat.value = chat.value + "\r\n " + nomJoueur + ": " +  msg
                if(chat.selectionStart == chat.selectionEnd) {
                 chat.scrollTop = chat.scrollHeight;
@@ -183,7 +183,7 @@
         })
         socket.on("addHistorique",(msg) => {
             const message = msg
-            console.log(msg)
+            
             historique.value = historique.value + "\r\n" + msg
             if(historique.selectionStart == historique.selectionEnd) {
                 historique.scrollTop = historique.scrollHeight;
@@ -195,7 +195,7 @@
 
             const joueur1 = new Joueur(jou1.id, jou1.nomJoueur, jou1.couleur)
             const joueur2 = new Joueur(jou2.id, jou2.nomJoueur, jou2.couleur)
-            console.log(joueur1)
+            
             des.removeAttribute("disabled")
             valider.setAttribute("disabled", '')
             joueur.setAttribute("disabled", '')
@@ -217,7 +217,7 @@
             auTourDe.innerHTML = "Au tour de : " + nomJoueur
         })
         des.addEventListener("click", function (e) {
-            console.log("test")
+            
             socket.emit("lancerDes")
         })
         socket.on("achat", function (nomCases, prix) {
@@ -229,14 +229,14 @@
             }
         })
         socket.on("majSolde", function (j1Solde, j2Solde) {
-            console.log(j1Solde)
-            console.log(j2Solde)
+            
+            
             soldej1.innerHTML = "Solde :" + j1Solde
             soldej2.innerHTML = "Solde :" + j2Solde
         })
         socket.on("fin", function (joueur) {
             const j = JSON.parse(joueur)
-            console.log(j)
+            
             if (confirm("Le vainqueur est : " + j.nomJoueur))
                 document.location.href = url
         })
@@ -246,7 +246,7 @@
             const h3 = document.createElement("h3")
             h3.style.color = color
             h3.innerHTML = nomCase
-            console.log(h3)
+            
             if (joueur.id == 1) {
                 possessionj1.appendChild(h3)
                 soldej1.innerHTML = "Solde :" + soldeRestant

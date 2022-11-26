@@ -53,7 +53,7 @@ class CaseDessin
         CaseDessin.incrementParcoursCase()
         CaseDessin.objectPosition.setAll(x,y,CaseDessin.#LARGEUR+20,CaseDessin.#HAUTEUR)
         CaseDessin.allPosition.push(Object.assign(CaseDessin.objectPosition.copy()))
-        console.log(x)
+        
 
     }
     dessinerLigneGauche()
@@ -94,7 +94,7 @@ class CaseDessin
         CaseDessin.incrementParcoursCase()
         CaseDessin.objectPosition.setAll(x,y,CaseDessin.#HAUTEUR,CaseDessin.#LARGEUR)
         CaseDessin.allPosition.push(Object.assign(CaseDessin.objectPosition.copy()))
-        console.log(x)
+        
     }
     dessinerLigneDroite()
     {

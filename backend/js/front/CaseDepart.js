@@ -5,6 +5,6 @@ class CaseDepart extends CaseJeu{
     actionCase(joueur) {
         super.actionCase();
         //joueur.solde += 200
-        //console.log("Case Depart")
+        //
     }
 }
