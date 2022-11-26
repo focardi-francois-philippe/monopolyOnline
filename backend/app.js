@@ -265,7 +265,7 @@ io.on('connection', (socket) => {
         joueur.ready = true
         joueur.nomJoueur = nomJoueur
         joueur.couleur = couleur
-  
+        io.sockets.in(idRoom).emit("addHistorique",nomJoueur + " est pret ")
         
         if(roomReady(rooms,idRoom) && clients.size == 2)
         {
@@ -317,6 +317,7 @@ io.on('connection', (socket) => {
 
         room.nomProchainJoueur = nouveauJoueur.nomJoueur
         room.idProchainJoueur = nouveauJoueur.id
+        io.sockets.in(idRoom).emit("addHistorique",joueur.nomJoueur + " viens d'acheter "+  room["cases"][joueur.idCase].name + " pour " + room["cases"][joueur.idCase].prix + " il dispose maintenant de  " + joueur.solde)
         auTourDe(idRoom,nouveauJoueur.nomJoueur)
         io.sockets.in(idRoom).emit("joueurAcheter",room["cases"][joueur.idCase].name,room["cases"][joueur.idCase].color,joueur.solde,idClientRequest)
         
@@ -342,6 +343,15 @@ io.on('connection', (socket) => {
             room.nomProchainJoueur = prochainJoueur.nomJoueur
         }
         auTourDe(idRoom,room.nomProchainJoueur)
+    })
+    socket.on("sendChat",async(msg)=>{
+        const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
+        const idClientRequest = socket.id
+        const clients = io.sockets.adapter.rooms.get(idRoom);//all clients room
+        const joueur = await joueurInRoom(rooms,idRoom,idClientRequest)
+
+        io.sockets.in(idRoom).emit("receiveChat",joueur.nomJoueur,msg)
+
     })
     socket.on('lancerDes',async () => {
         const idRoom = JSON.parse(JSON.stringify(socket.handshake.query))["idSalon"]
@@ -390,11 +400,12 @@ io.on('connection', (socket) => {
             }
             else if(room["cases"][currentJoueur.idCase].proprietaire != null)
             {
+                
                 if(room["cases"][currentJoueur.idCase].proprietaire != idClientRequest)
                 {
                     nouveauJoueur.solde += room["cases"][currentJoueur.idCase].loyer
                     currentJoueur.solde -= room["cases"][currentJoueur.idCase].loyer
-                    
+                    io.sockets.in(idRoom).emit("addHistorique",currentJoueur.nomJoueur + " est tombe a " +  room["cases"][currentJoueur.idCase].name + " la case appartiens a " + nouveauJoueur.nomJoueur + " il lui verse donc un  loyer de " + room["cases"][currentJoueur.idCase].loyer)
                     
                     if(nouveauJoueur.idJeu == 1)
                     {
@@ -410,6 +421,7 @@ io.on('connection', (socket) => {
                 room.nomProchainJoueur = nouveauJoueur.nomJoueur
                 room.idProchainJoueur = nouveauJoueur.id
                 room["cases"][currentJoueur.idCase].loyer *=2
+                io.sockets.in(idRoom).emit("addHistorique","le loyer de : " + room["cases"][currentJoueur.idCase].name + " deviens " + room["cases"][currentJoueur.idCase].loyer)
                 auTourDe(idRoom,room.nomProchainJoueur)
                
             }
@@ -428,7 +440,7 @@ io.on('connection', (socket) => {
     
   });
 
-server.listen(port,() => {
+server.listen(port | 3000,() => {
   
 })
 

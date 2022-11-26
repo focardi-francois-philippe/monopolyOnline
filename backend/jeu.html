@@ -8,6 +8,28 @@
     <title>Document</title>
 </head>
 <style>
+    table {
+        border-collapse: collapse;
+        border-bottom: 1px solid rgb(0, 0, 0, 0.2);
+
+        width: 10%;
+      }
+      
+      /*----- table headings -----*/
+      th {
+        background-color: #aecbeb;
+        border: 1px solid black;
+        text-align: left;
+        font-size: 14px;
+      }
+      
+      
+      /*----- table data (a cell) -----*/
+      td {
+        border-bottom: 1px solid black;
+        border: 1px solid rgb(0, 0, 0, 0.2);
+      }
+      
     canvas {
         border: 5px solid red;
 
@@ -18,12 +40,13 @@
         margin-right: auto;
         border: 1px black solid;
         width: 600px;
-        height: 600px;
+        height: 550px;
     }
 
     .affichage {
         display: flex;
     }
+
     .hidden {
         display: none;
     }
@@ -34,17 +57,30 @@
     <div style="margin-bottom: 50px">
 
         <form id="form">
-            <label for="joueur">Nom joueur 1 </label>
+            <label for="joueur">Nom joueur </label>
             <input id="joueur" type="text" required>
             <label for="couleurJoueur">Couleur du joueur</label>
             <input id="couleurJoueur" type="color" required>
             <button id="valider" type="button">Valider</button>
         </form>
     </div>
-    <button disabled id="des">Lancer les des</button>
-    <h3 id="auTourDe"></h3>
-    <h3 id="resultatDernierLancer"></h3>
+    <div style="display:flex; justify-content: space-around;">
+        <div>
+            <button disabled id="des">Lancer les des</button>
+            <h3 id="auTourDe"></h3>
+            <h3 id="resultatDernierLancer"></h3>
+        </div>
+        <div>
+            <textarea  style="resize: none; width:450px;height:80px " id="log"  disabled>Historique :</textarea>
+        </div>
+
+    </div>
+
     <div class="affichage">
+
+
+
+
         <div>
             <h3 id="joueur1h3">Joueur 1 : </h3>
             <h4 id="soldej1">Solde : </h4>
@@ -53,12 +89,6 @@
                 <h2>Possesions : </h2>
             </div>
         </div>
-        
-        <div  class="centerJeu">
-            
-            <canvas id="canvas" width="600" height="600"></canvas>
-        </div>
-
         <div>
             <h3 id="joueur2h3">Joueur 2 : </h3>
             <h4 id="soldej2">Solde : </h4>
@@ -66,6 +96,22 @@
                 <h2>Possesions : </h2>
 
             </div>
+        </div>
+
+        <div class="centerJeu">
+
+            <canvas id="canvas" width="600" height="550"></canvas>
+        </div>
+
+        <div style=" margin-top: 50px; margin-right: 50px;display: flex; flex-direction: column;">
+            
+
+            <label for="Chat">Chat</label>
+            <textarea  style="resize: none; width:300px;height:100px " id="Chat"  disabled></textarea>
+            
+            <label for="chatMessage">Message a envoyer</label>
+            <input id="chatMessage" type="text">
+            <button type="button" disabled id="postMessageChat">Valider</button>
         </div>
     </div>
     <script>
@@ -83,14 +129,14 @@
     <script src="/CaseDepart"></script>
     <script src="/Plateau"></script>
     <script src="/Jeu"></script>
-    <script src="/App"></script> 
+    <script src="/App"></script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const url = "https://secret-lake-59255.herokuapp.com/"
+        const url ="https://secret-lake-59255.herokuapp.com/" //"127.0.0.1:3000" //
         let idSalon = window.location.toString().split('idSalon=')[1]
         const app = new App()
-        const socket = io.connect(url+"?idSalon="+idSalon,{"force new connection":true});
+        const socket = io.connect(url + "?idSalon=" + idSalon, { "force new connection": true });
         const valider = document.getElementById("valider")
         const des = document.getElementById("des")
         const auTourDe = document.getElementById("auTourDe")
@@ -104,91 +150,110 @@
         const soldej2 = document.getElementById("soldej2")
         const joueur1h3 = document.getElementById("joueur1h3")
         const joueur2h3 = document.getElementById("joueur2h3")
-        valider.addEventListener("click",() => {
-            
+        const messageChat = document.getElementById("chatMessage")
+        const postMessageChat = document.getElementById("postMessageChat")
+        const chat = document.getElementById("Chat")
+        const historique = document.getElementById("log")
+        valider.addEventListener("click", () => {
+
             console.log(joueur.value)
             console.log(couleurJoueur.value)
             console.log(joueur.value)
-            if(joueur.value !="")
-            {
-                socket.emit('addJoueur', joueur.value,couleurJoueur.value);
+            if (joueur.value != "") {
+                socket.emit('addJoueur', joueur.value, couleurJoueur.value);
+                postMessageChat.removeAttribute("disabled")
             }
             
-            
+
         })
-        socket.on("ready",function(j1,j2){
+
+        postMessageChat.addEventListener("click",()=>
+        {
+            socket.emit("sendChat",messageChat.value)
+            messageChat.value = ""
+        });
+
+        socket.on("receiveChat",(emeteur,msg) => {
+               const nomJoueur = emeteur
+               console.log(emeteur)
+               chat.value = chat.value + "\r\n " + nomJoueur + ": " +  msg
+               if(chat.selectionStart == chat.selectionEnd) {
+                chat.scrollTop = chat.scrollHeight;
+             }
+        })
+        socket.on("addHistorique",(msg) => {
+            const message = msg
+            console.log(msg)
+            historique.value = historique.value + "\r\n" + msg
+            if(historique.selectionStart == historique.selectionEnd) {
+                historique.scrollTop = historique.scrollHeight;
+             }
+     })
+        socket.on("ready", function (j1, j2) {
             const jou1 = JSON.parse(j1)
             const jou2 = JSON.parse(j2)
-            
-            const joueur1 = new Joueur(jou1.id,jou1.nomJoueur,jou1.couleur)
-            const joueur2 = new Joueur(jou2.id,jou2.nomJoueur,jou2.couleur)
+
+            const joueur1 = new Joueur(jou1.id, jou1.nomJoueur, jou1.couleur)
+            const joueur2 = new Joueur(jou2.id, jou2.nomJoueur, jou2.couleur)
             console.log(joueur1)
             des.removeAttribute("disabled")
-            valider.setAttribute("disabled",'')
-            joueur.setAttribute("disabled",'')
-            couleurJoueur.setAttribute("disabled",'')
-            app.initJeu(joueur1,joueur2)
-            soldej1.innerHTML= "Solde :"+joueur1.solde
-            soldej2.innerHTML= "Solde :"+joueur2.solde
-            joueur1h3.innerHTML = "Joueur 1 :"+joueur1.nom
-            joueur2h3.innerHTML = "Joueur 2 :"+joueur2.nom
+            valider.setAttribute("disabled", '')
+            joueur.setAttribute("disabled", '')
+            couleurJoueur.setAttribute("disabled", '')
+            app.initJeu(joueur1, joueur2)
+            soldej1.innerHTML = "Solde :" + joueur1.solde
+            soldej2.innerHTML = "Solde :" + joueur2.solde
+            joueur1h3.innerHTML = "Joueur 1 :" + joueur1.nom
+            joueur2h3.innerHTML = "Joueur 2 :" + joueur2.nom
         })
-        socket.on("resultDes",function(result,socketIdJoueur){
-            resultatDernierLancer.innerHTML = "Resultat du dernier lancer :"+result
+        socket.on("resultDes", function (result, socketIdJoueur) {
+            resultatDernierLancer.innerHTML = "Resultat du dernier lancer :" + result
             const joueur = app.getJoueurByIdSocket(socketIdJoueur)
             app.jeu.plateau.enleverJoueur(joueur)
             joueur.deplacement(result)
             app.jeu.plateau.dessinerJoueur(joueur)
         })
-        socket.on("auTourDe",function(nomJoueur){
-            auTourDe.innerHTML = "Au tour de : "+nomJoueur
+        socket.on("auTourDe", function (nomJoueur) {
+            auTourDe.innerHTML = "Au tour de : " + nomJoueur
         })
-        des.addEventListener("click",function(e) {
+        des.addEventListener("click", function (e) {
             console.log("test")
             socket.emit("lancerDes")
         })
-        socket.on("achat",function(nomCases,prix)
-        {
-            if(window.confirm("Vous etes tombe sur "+nomCases + " Voulez vous l'acheter le prix est de : "+prix))
-            {
+        socket.on("achat", function (nomCases, prix) {
+            if (window.confirm("Vous etes tombe sur " + nomCases + " Voulez vous l'acheter le prix est de : " + prix)) {
                 socket.emit("acheter")
             }
-            else
-            {
+            else {
                 socket.emit("prochainJoueur")
             }
         })
-        socket.on("majSolde",function(j1Solde,j2Solde)
-        {
+        socket.on("majSolde", function (j1Solde, j2Solde) {
             console.log(j1Solde)
             console.log(j2Solde)
-            soldej1.innerHTML= "Solde :"+j1Solde
-            soldej2.innerHTML= "Solde :"+j2Solde
+            soldej1.innerHTML = "Solde :" + j1Solde
+            soldej2.innerHTML = "Solde :" + j2Solde
         })
-        socket.on("fin",function(joueur)
-        {
+        socket.on("fin", function (joueur) {
             const j = JSON.parse(joueur)
             console.log(j)
-            if(confirm("Le vainqueur est : " + j.nomJoueur))
+            if (confirm("Le vainqueur est : " + j.nomJoueur))
                 document.location.href = url
         })
 
-        socket.on("joueurAcheter",function(nomCase,color,soldeRestant,idSocket)
-        {
+        socket.on("joueurAcheter", function (nomCase, color, soldeRestant, idSocket) {
             const joueur = app.getJoueurByIdSocket(idSocket)
             const h3 = document.createElement("h3")
             h3.style.color = color
             h3.innerHTML = nomCase
             console.log(h3)
-            if(joueur.id == 1)
-            {
+            if (joueur.id == 1) {
                 possessionj1.appendChild(h3)
-                soldej1.innerHTML= "Solde :"+soldeRestant
+                soldej1.innerHTML = "Solde :" + soldeRestant
             }
-            else
-            {
+            else {
                 possessionj2.append(h3)
-                soldej2.innerHTML= "Solde :"+soldeRestant
+                soldej2.innerHTML = "Solde :" + soldeRestant
             }
         })
     </script>
