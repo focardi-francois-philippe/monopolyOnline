@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    canvas {
+        border: 5px solid red;
+
+    }
+
+    .centerJeu {
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px black solid;
+        width: 600px;
+        height: 600px;
+    }
+
+    .affichage {
+        display: flex;
+    }
+    .hidden {
+        display: none;
+    }
+</style>
+
+
+<body>
+    <div style="margin-bottom: 50px">
+
+        <form id="form">
+            <label for="joueur">Nom joueur 1 </label>
+            <input id="joueur" type="text" value="Bastia">
+            <label for="couleurJoueur">Couleur du joueur</label>
+            <input id="couleurJoueur" type="color" value="#0053a1">
+            <button id="valider" type="button">Valider</button>
+        </form>
+    </div>
+    <button disabled id="des">Lancer les des</button>
+    <h3 id="auTourDe"></h3>
+    <h3 id="resultatDernierLancer"></h3>
+    <div class="affichage">
+        <div>
+            <h3 id="joueur1h3">Joueur 1 : </h3>
+            <h4 id="soldej1">Solde : </h4>
+
+            <div id="possessionj1">
+                <h2>Possesions : </h2>
+            </div>
+        </div>
+        
+        <div  class="centerJeu">
+            
+            <canvas id="canvas" width="600" height="600"></canvas>
+        </div>
+
+        <div>
+            <h3 id="joueur2h3">Joueur 2 : </h3>
+            <h4 id="soldej2">Solde : </h4>
+            <div id="possessionj2">
+                <h2>Possesions : </h2>
+
+            </div>
+        </div>
+    </div>
+    <script>
+
+
+    </script>
+
+
+    <script src="/CaseDessin"></script>
+    <script src="/Joueur"></script>
+    <script src="/CaseJeu"></script>
+    <script src="/CaseImpot"></script>
+    <script src="/CasePropriete"></script>
+    <script src="/CaseNoAction"></script>
+    <script src="/CaseDepart"></script>
+    <script src="/Plateau"></script>
+    <script src="/Jeu"></script>
+    <script src="/app"></script> 
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let idSalon = window.location.toString().split('idSalon=')[1]
+        const app = new App()
+        const socket = io.connect("http://127.0.0.1:3000/?idSalon="+idSalon,{"force new connection":true});
+        const valider = document.getElementById("valider")
+        const des = document.getElementById("des")
+        const auTourDe = document.getElementById("auTourDe")
+        const resultatDernierLancer = document.getElementById("resultatDernierLancer")
+        const couleurJoueur = document.getElementById("couleurJoueur")
+        const canvas = document.getElementById("canvas")
+        const joueur = document.getElementById("joueur")
+        const possessionj1 = document.getElementById("possessionj1")
+        const possessionj2 = document.getElementById("possessionj2")
+        const soldej1 = document.getElementById("soldej1")
+        const soldej2 = document.getElementById("soldej2")
+        const joueur1h3 = document.getElementById("joueur1h3")
+        const joueur2h3 = document.getElementById("joueur2h3")
+        valider.addEventListener("click",() => {
+            
+            console.log(joueur.value)
+            console.log(couleurJoueur.value)
+            socket.emit('addJoueur', joueur.value,couleurJoueur.value);
+            
+        })
+        socket.on("ready",function(j1,j2){
+            const jou1 = JSON.parse(j1)
+            const jou2 = JSON.parse(j2)
+            
+            const joueur1 = new Joueur(jou1.id,jou1.nomJoueur,jou1.couleur)
+            const joueur2 = new Joueur(jou2.id,jou2.nomJoueur,jou2.couleur)
+            console.log(joueur1)
+            des.removeAttribute("disabled")
+            valider.setAttribute("disabled",'')
+            joueur.setAttribute("disabled",'')
+            couleurJoueur.setAttribute("disabled",'')
+            app.initJeu(joueur1,joueur2)
+            soldej1.innerHTML= "Solde :"+joueur1.solde
+            soldej2.innerHTML= "Solde :"+joueur2.solde
+            joueur1h3.innerHTML = "Joueur 1 :"+joueur1.nom
+            joueur2h3.innerHTML = "Joueur 2 :"+joueur2.nom
+        })
+        socket.on("resultDes",function(result,socketIdJoueur){
+            resultatDernierLancer.innerHTML = "Resultat du dernier lancer :"+result
+            const joueur = app.getJoueurByIdSocket(socketIdJoueur)
+            app.jeu.plateau.enleverJoueur(joueur)
+            joueur.deplacement(result)
+            app.jeu.plateau.dessinerJoueur(joueur)
+        })
+        socket.on("auTourDe",function(nomJoueur){
+            auTourDe.innerHTML = "Au tour de : "+nomJoueur
+        })
+        des.addEventListener("click",function(e) {
+            console.log("test")
+            socket.emit("lancerDes")
+        })
+        socket.on("achat",function(nomCases,prix)
+        {
+            if(window.confirm("Vous etes tombe sur "+nomCases + " Voulez vous l'acheter le prix est de : "+prix))
+            {
+                socket.emit("acheter")
+            }
+            else
+            {
+                socket.emit("prochainJoueur")
+            }
+        })
+        socket.on("majSolde",function(j1Solde,j2Solde)
+        {
+            console.log(j1Solde)
+            console.log(j2Solde)
+            soldej1.innerHTML= "Solde :"+j1Solde
+            soldej2.innerHTML= "Solde :"+j2Solde
+        })
+        socket.on("fin",function(joueur)
+        {
+            const j = JSON.parse(joueur)
+            console.log(j)
+            if(confirm("Le vainqueur est : " + j.nomJoueur))
+                document.location.href = "http://127.0.0.1:3000/"
+        })
+
+        socket.on("joueurAcheter",function(nomCase,color,soldeRestant,idSocket)
+        {
+            const joueur = app.getJoueurByIdSocket(idSocket)
+            const h3 = document.createElement("h3")
+            h3.style.color = color
+            h3.innerHTML = nomCase
+            console.log(h3)
+            if(joueur.id == 1)
+            {
+                possessionj1.appendChild(h3)
+                soldej1.innerHTML= "Solde :"+soldeRestant
+            }
+            else
+            {
+                possessionj2.append(h3)
+                soldej2.innerHTML= "Solde :"+soldeRestant
+            }
+        })
+    </script>
+</body>
+
+</html>
