@@ -164,8 +164,8 @@ app.get('/Plateau', (req, res) => {
 app.get('/Jeu', (req, res) => {
     res.sendFile(path.join(__dirname,'/js/front/Jeu.js'))
 })
-app.get('/app', (req, res) => {
-    res.sendFile(path.join(__dirname,'/js/front/app.js'))
+app.get('/App', (req, res) => {
+    res.sendFile(path.join(__dirname,'/js/front/App.js'))
 })
 app.get("/creerSalon",(req,res)=>{
     const id = crypto.randomBytes(16).toString("hex");

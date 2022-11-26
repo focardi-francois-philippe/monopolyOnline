@@ -83,13 +83,14 @@
     <script src="/CaseDepart"></script>
     <script src="/Plateau"></script>
     <script src="/Jeu"></script>
-    <script src="/app"></script> 
+    <script src="/App"></script> 
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        const url = "https://secret-lake-59255.herokuapp.com/"
         let idSalon = window.location.toString().split('idSalon=')[1]
         const app = new App()
-        const socket = io.connect("http://127.0.0.1:3000/?idSalon="+idSalon,{"force new connection":true});
+        const socket = io.connect(url+"?idSalon="+idSalon,{"force new connection":true});
         const valider = document.getElementById("valider")
         const des = document.getElementById("des")
         const auTourDe = document.getElementById("auTourDe")
