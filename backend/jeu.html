@@ -108,7 +108,11 @@
             
             console.log(joueur.value)
             console.log(couleurJoueur.value)
-            socket.emit('addJoueur', joueur.value,couleurJoueur.value);
+            if(joueur.value !="")
+            {
+                socket.emit('addJoueur', joueur.value,couleurJoueur.value);
+            }
+            
             
         })
         socket.on("ready",function(j1,j2){
@@ -165,7 +169,7 @@
             const j = JSON.parse(joueur)
             console.log(j)
             if(confirm("Le vainqueur est : " + j.nomJoueur))
-                document.location.href = "http://127.0.0.1:3000/"
+                document.location.href = url
         })
 
         socket.on("joueurAcheter",function(nomCase,color,soldeRestant,idSocket)
