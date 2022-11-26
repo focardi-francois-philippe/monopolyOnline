@@ -403,6 +403,33 @@ io.on('connection', (socket) => {
             {
                 io.to(idClientRequest).emit("achat",room["cases"][currentJoueur.idCase].name,room["cases"][currentJoueur.idCase].prix)
                 
+                    
+            }
+            else if(room["cases"][currentJoueur.idCase].categorie == "impot")
+            {
+                currentJoueur.solde -=100
+                io.sockets.in(idRoom).emit("addHistorique",currentJoueur.nomJoueur + " est tombe sur la case impot il vient de perdre 100")
+                if(nouveauJoueur.idJeu == 1)
+                {
+                    io.sockets.in(idRoom).emit("majSolde",nouveauJoueur.solde ,currentJoueur.solde)
+                }
+                else
+                {
+                    io.sockets.in(idRoom).emit("majSolde",currentJoueur.solde ,nouveauJoueur.solde)
+                }
+            }
+            else if(room["cases"][currentJoueur.idCase].categorie == "depart")
+            {
+                currentJoueur.solde +=150
+                io.sockets.in(idRoom).emit("addHistorique",currentJoueur.nomJoueur + " est tombe sur la case depart il est crediter de 150")
+                if(nouveauJoueur.idJeu == 1)
+                {
+                    io.sockets.in(idRoom).emit("majSolde",nouveauJoueur.solde ,currentJoueur.solde)
+                }
+                else
+                {
+                    io.sockets.in(idRoom).emit("majSolde",currentJoueur.solde ,nouveauJoueur.solde)
+                }
             }
             else if(room["cases"][currentJoueur.idCase].proprietaire != null)
             {
@@ -427,7 +454,7 @@ io.on('connection', (socket) => {
                 room.nomProchainJoueur = nouveauJoueur.nomJoueur
                 room.idProchainJoueur = nouveauJoueur.id
                 room["cases"][currentJoueur.idCase].loyer *=2
-                io.sockets.in(idRoom).emit("addHistorique","le loyer de : " + room["cases"][currentJoueur.idCase].name + " deviens " + room["cases"][currentJoueur.idCase].loyer)
+                io.sockets.in(idRoom).emit("addHistorique","le loyer de : " + room["cases"][currentJoueur.idCase].name + " il devient maintenant " + room["cases"][currentJoueur.idCase].loyer)
                 auTourDe(idRoom,room.nomProchainJoueur)
                
             }
