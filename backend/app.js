@@ -440,7 +440,7 @@ io.on('connection', (socket) => {
     
   });
 
-server.listen(port | 3000,() => {
+server.listen(port,() => {
   
 })
 
