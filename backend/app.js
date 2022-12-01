@@ -417,6 +417,7 @@ io.on('connection', (socket) => {
                 {
                     io.sockets.in(idRoom).emit("majSolde",currentJoueur.solde ,nouveauJoueur.solde)
                 }
+                auTourDe(idRoom,room.nomProchainJoueur)
             }
             else if(room["cases"][currentJoueur.idCase].categorie == "depart")
             {
@@ -430,6 +431,7 @@ io.on('connection', (socket) => {
                 {
                     io.sockets.in(idRoom).emit("majSolde",currentJoueur.solde ,nouveauJoueur.solde)
                 }
+                auTourDe(idRoom,room.nomProchainJoueur)
             }
             else if(room["cases"][currentJoueur.idCase].proprietaire != null)
             {
