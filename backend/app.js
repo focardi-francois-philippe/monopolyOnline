@@ -419,7 +419,7 @@ io.on('connection', (socket) => {
                 }
                 room.nomProchainJoueur = nouveauJoueur.nomJoueur
                 room.idProchainJoueur = nouveauJoueur.id
-                auTourDe(idRoom,nouveauJoueur.nomProchainJoueur)
+                auTourDe(idRoom,room.nomProchainJoueur)
             }
             else if(room["cases"][currentJoueur.idCase].categorie == "depart")
             {
